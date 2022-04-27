@@ -66,6 +66,11 @@
 								"type": "uint256"
 							},
 							{
+								"internalType": "uint256",
+								"name": "_tokesReleased",
+								"type": "uint256"
+							},
+							{
 								"internalType": "bool",
 								"name": "_isValid",
 								"type": "bool"
@@ -110,16 +115,67 @@
 						"internalType": "uint256",
 						"name": "amount_",
 						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "isValid_",
-						"type": "bool"
 					}
 				],
 				"name": "createVestingScheme",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_schemeId",
+						"type": "uint256"
+					}
+				],
+				"name": "getVestingSchemeById",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "_beneficiary",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "_startTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "_duration",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "_releaseSchedule",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "_amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "_tokesReleased",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "_isValid",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TokenVesting.vestingScheme",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -133,6 +189,24 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_schemeId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "releaseTokens",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -206,11 +280,11 @@
 			]
 		},
 		"contract/tokenvesting.sol": {
-			"keccak256": "0x7500345c0c0b4a07c2b8ce5c477ea7e4da2d7ab323f21abacde6a34913db94b8",
+			"keccak256": "0xb75bd16ce7adaf497497eeea941f6f07f3d4da0504d9568bd8e0f33641a16d64",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0635e1c3359a433142d7eb70d77b40e8791f7bdb4be37414fe054fe2bee1d480",
-				"dweb:/ipfs/QmcJJya9AFUeRZMfWoABHJs1G5ZHjnhzGRfL1CmsjoB9k2"
+				"bzz-raw://6f30dc2f2d9d98ba620d07474e6b371a12c5938bb7f382a541adc81d73828c9f",
+				"dweb:/ipfs/QmY6aFvXNwxSvc9QZThccPcDWiTBP7unKVuC4BxH5XG77z"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
