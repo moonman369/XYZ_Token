@@ -42,37 +42,37 @@
 						"components": [
 							{
 								"internalType": "address",
-								"name": "_beneficiary",
+								"name": "beneficiary",
 								"type": "address"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_startTime",
+								"name": "startTime",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_duration",
+								"name": "duration",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_releaseSchedule",
+								"name": "releaseSchedule",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_amount",
+								"name": "amount",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_tokesReleased",
+								"name": "tokensReleased",
 								"type": "uint256"
 							},
 							{
 								"internalType": "bool",
-								"name": "_isValid",
+								"name": "isValid",
 								"type": "bool"
 							}
 						],
@@ -82,7 +82,7 @@
 						"type": "tuple"
 					}
 				],
-				"name": "VestingShemeCreation",
+				"name": "VestingSchemeCreation",
 				"type": "event"
 			},
 			{
@@ -93,33 +93,110 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "beneficiary_",
+						"name": "_beneficiary",
 						"type": "address"
 					},
 					{
 						"internalType": "uint256",
-						"name": "startTime_",
+						"name": "_startTime",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "duration_",
+						"name": "_duration",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "releaseSchedule_",
+						"name": "_releaseSchedule",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "amount_",
+						"name": "_amount",
 						"type": "uint256"
 					}
 				],
 				"name": "createVestingScheme",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getBeneficiarySchemeCountLimit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getSchemeCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getSchemeCountLimit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_beneficiary",
+						"type": "address"
+					}
+				],
+				"name": "getSchemeIdsByBeneficiary",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_schemeId",
+						"type": "uint256"
+					}
+				],
+				"name": "getUnvestedAmountById",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -136,37 +213,37 @@
 						"components": [
 							{
 								"internalType": "address",
-								"name": "_beneficiary",
+								"name": "beneficiary",
 								"type": "address"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_startTime",
+								"name": "startTime",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_duration",
+								"name": "duration",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_releaseSchedule",
+								"name": "releaseSchedule",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_amount",
+								"name": "amount",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "_tokesReleased",
+								"name": "tokensReleased",
 								"type": "uint256"
 							},
 							{
 								"internalType": "bool",
-								"name": "_isValid",
+								"name": "isValid",
 								"type": "bool"
 							}
 						],
@@ -212,6 +289,32 @@
 			{
 				"inputs": [],
 				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_beneficiarySchemeCountLimit",
+						"type": "uint256"
+					}
+				],
+				"name": "setBeneficiarySchemeCountLimit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_schemeCountLimit",
+						"type": "uint256"
+					}
+				],
+				"name": "setSchemeCountLimit",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -272,19 +375,19 @@
 	},
 	"sources": {
 		"contract/token.sol": {
-			"keccak256": "0x606860eba3dc71b5cadbacf2dc00f113b0c3751e7e534689c6970809f2cc60d3",
+			"keccak256": "0x023ea8ee205b1beb5c0e79053113dca8d538536fc57062d73f0e3e61764cf734",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7aa3c4ff9244ce3bafd4d7597770dfd81b9ade0346de810db876b169a14d8e65",
-				"dweb:/ipfs/QmZTQn6wCLK8qejHwDBAeawu9emYjsSWUkgQb8RJ4AymJj"
+				"bzz-raw://e75e6999d43d8f82f6217bcf5372c50e49e9bbceb8ded667d1943a3826c3e6dd",
+				"dweb:/ipfs/QmW6nQ9YnxiHKCYKPupzaB1MuKPZ6a3qDZR7PDEpNkNHRx"
 			]
 		},
 		"contract/tokenvesting.sol": {
-			"keccak256": "0xb75bd16ce7adaf497497eeea941f6f07f3d4da0504d9568bd8e0f33641a16d64",
+			"keccak256": "0xe1bf961fb8c1ae9407877eeeaee363b850ef95a22e7f9b17c97b4756e6cb6705",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6f30dc2f2d9d98ba620d07474e6b371a12c5938bb7f382a541adc81d73828c9f",
-				"dweb:/ipfs/QmY6aFvXNwxSvc9QZThccPcDWiTBP7unKVuC4BxH5XG77z"
+				"bzz-raw://83dd35e5140ef2bd6fb9275ae14b92390e0fdcf57adb706529fd73a90bd7e9e1",
+				"dweb:/ipfs/QmUeXh1yp4jyFUCJmDDpgtonAPxFQMi81MhaYGgsCEvm8o"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {

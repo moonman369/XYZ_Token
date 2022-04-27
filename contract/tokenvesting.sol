@@ -27,10 +27,11 @@ contract TokenVesting is Ownable {
     uint256 private schemeId;
     uint256 private schemeCountLimit;
     uint256 private schemeCount;
+    uint256 private beneficiarySchemeCountLimit;
     mapping (uint256 => vestingScheme) schemes;
-    mapping (uint256 => uint256) beneficiarySchemeCount;
+    mapping (address => uint256[]) beneficiarySchemeIds;
 
-    event VestingShemeCreation (TokenVesting.vestingScheme);
+    event VestingSchemeCreation (TokenVesting.vestingScheme);
 
     modifier notZeroAddress(address _token) {
         require (_token != address(0));
@@ -40,6 +41,7 @@ contract TokenVesting is Ownable {
     constructor (address _token) notZeroAddress (_token) {
         token = IERC20 (_token);
         schemeCountLimit = 10;
+        beneficiarySchemeCountLimit = 1;
     }
 
     receive () external payable {}
@@ -52,6 +54,14 @@ contract TokenVesting is Ownable {
         require (_schemeId < schemeId, "TokenVesting: Scheme Id out of bounds");
         require (schemes[_schemeId].isValid == true, "TokenVesting: Vesting Scheme is either deleted or does not exist");
         return schemes[_schemeId];
+    }
+
+    function getBeneficiarySchemeCountLimit () external view returns (uint256) {
+        return beneficiarySchemeCountLimit;
+    }
+
+    function getSchemeIdsByBeneficiary (address _beneficiary) external view returns (uint256[] memory) {
+        return beneficiarySchemeIds[_beneficiary];
     }
 
     function getUnvestedAmountById (uint256 _schemeId) external view returns (uint256) {
@@ -74,6 +84,10 @@ contract TokenVesting is Ownable {
         schemeCountLimit = _schemeCountLimit;
     }
 
+    function setBeneficiarySchemeCountLimit (uint _beneficiarySchemeCountLimit) public onlyOwner {
+        beneficiarySchemeCountLimit = _beneficiarySchemeCountLimit;
+    }
+
     function createVestingScheme (
         address _beneficiary,
         uint256 _startTime,
@@ -84,7 +98,8 @@ contract TokenVesting is Ownable {
         require (_beneficiary != address(0), "TokenVesting: Cannot add zero address as beneficiary");
         require (_duration > 0, "TokenVesting: Vesting period must be greater than zero");
         require (_amount > 0, "TokenVesting: Vestable amount must be greater than 0");
-        require (beneficiarySchemeCount[_beneficiary] < 1, "TokenVesting: Only one vesting scheme per beneficiary is allowed at a time.");
+        require (beneficiarySchemeIds[_beneficiary].length < beneficiarySchemeCountLimit, "TokenVesting: Scheme count for this beneficiary has reached limit.");
+
         vestingScheme memory scheme = vestingScheme (
          _beneficiary,
          _startTime,
@@ -94,11 +109,11 @@ contract TokenVesting is Ownable {
          0,
          true);
 
-        beneficiarySchemeCount[scheme.beneficiary] = beneficiarySchemeCount[scheme.beneficiary].add(1);
-        schemeId = _calculateNewSchemeId(schemeCount, _beneficiary);
+        schemeId = _calculateNewSchemeId(_beneficiary, schemeCount);
+        beneficiarySchemeIds[scheme.beneficiary].push(schemeId);
         schemes[schemeId] = scheme;
         schemeCount.add(1);
-        emit VestingShemeCreation (scheme);
+        emit VestingSchemeCreation (scheme);
     }
 
     function releaseTokens (
@@ -111,8 +126,8 @@ contract TokenVesting is Ownable {
 
         vestingScheme memory scheme = schemes[schemeId];
 
-        uint256 vestedAmount = _calculateReleaseableAmount (scheme);
-        require (_amount <= vestedAmount, "TokenVesting: Amount greater than current vested amount");
+        // uint256 vestedAmount = _calculateReleaseableAmount (scheme);
+        // require (_amount <= vestedAmount, "TokenVesting: Amount greater than current vested amount");
 
         scheme.tokensReleased = scheme.tokensReleased.add(_amount);
         token.transfer(scheme.beneficiary, _amount);
@@ -120,7 +135,7 @@ contract TokenVesting is Ownable {
 
 
 
-    function _calculateNewSchemeId (address _beneficiary, uint256 index) internal view returns (uint256) {
+    function _calculateNewSchemeId (address _beneficiary, uint256 index) internal pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(_beneficiary, index))) % 1000000000;
     }
 
