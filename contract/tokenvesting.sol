@@ -5,7 +5,6 @@ pragma solidity 0.8.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Context.sol";
 import "./token.sol";
 
 contract TokenVesting is Ownable {
@@ -16,7 +15,6 @@ contract TokenVesting is Ownable {
 
     struct vestingScheme {
         address beneficiary;
-        uint256 schemeId;
         uint256 startTime;
         uint256 duration;
         uint256 releaseSchedule;
@@ -27,6 +25,7 @@ contract TokenVesting is Ownable {
 
     uint256 private schemeCountLimit;
     uint256 private schemeCount;
+    uint256 private schemeId;
     uint256 private beneficiarySchemeCountLimit;
     mapping (uint256 => vestingScheme) schemes;
     mapping (address => uint256[]) beneficiarySchemeIds;
@@ -99,6 +98,7 @@ contract TokenVesting is Ownable {
         require (beneficiarySchemeIds[_beneficiary].length < beneficiarySchemeCountLimit, "TokenVesting: Scheme count for this beneficiary has reached limit.");
 
         vestingScheme memory scheme = vestingScheme (
+         
          _beneficiary,
          _startTime,
          _duration,
@@ -107,9 +107,9 @@ contract TokenVesting is Ownable {
          0,
          true);
 
-        scheme.schemeId = _calculateNewSchemeId(_beneficiary, schemeCount);
-        beneficiarySchemeIds[scheme.beneficiary].push(scheme.schemeId);
-        schemes[scheme.schemeId] = scheme;
+        schemeId = _calculateNewSchemeId(_beneficiary, schemeCount);
+        beneficiarySchemeIds[scheme.beneficiary].push(schemeId);
+        schemes[schemeId] = scheme;
         schemeCount.add(1);
         emit VestingSchemeCreation (scheme);
     }
@@ -134,10 +134,10 @@ contract TokenVesting is Ownable {
 
 
     function _calculateReleaseableAmount (vestingScheme memory scheme) internal view returns (uint256) {
-        uint256 now = _now();
-        if (now < scheme.startTime.add(scheme.duration)){
+        uint256 now_ = _now();
+        if (now_ < scheme.startTime.add(scheme.duration)){
             uint256 durationInMinutes = (scheme.duration * 1 days) / (scheme.releaseSchedule * 1 minutes);
-            uint256 timeElapsed = now.sub(scheme.startTime);
+            uint256 timeElapsed = now_.sub(scheme.startTime);
             uint256 vestingPeriodsElapsed = timeElapsed.div(scheme.releaseSchedule);
             uint256 releaseAmount = scheme.amount.mul(scheme.releaseSchedule).mul(vestingPeriodsElapsed).div(durationInMinutes);
             releaseAmount = releaseAmount.sub(scheme.tokensReleased);

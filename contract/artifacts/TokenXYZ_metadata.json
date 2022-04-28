@@ -375,11 +375,11 @@
 			]
 		},
 		"contract/tokenvesting.sol": {
-			"keccak256": "0xb758f0321c888b3787bce0b0276df2cfe94a487081747171bae273f4dd66d2d5",
+			"keccak256": "0x0e319f721fb7a618b8963233138864df7ee13bfd6e17869c7d89e30528b17d35",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://048527d5dc875244625323b8a05fa30a42fe690382843cd54a40ae910873a2dc",
-				"dweb:/ipfs/QmXnVPD1uYQUuUSRsLk3CZaaVucNEPwaaCDeGwcjstC9MA"
+				"bzz-raw://e6f046c9409f5a5b91a48f76724ce2d855b25024c1673cb955ac9953328d4f7a",
+				"dweb:/ipfs/QmbNQ7bwrG1hi7L5M21g2YtHyB7gezUQHxMHSgYESsicr7"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
