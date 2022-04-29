@@ -72,7 +72,10 @@ contract TokenVesting is Ownable {
     * @dev Returns the number of beneficiary addresses added.
     * @return the number of beneficiary addresses
     */
-    function getBeneficiaryCount () public view returns (uint256) {
+    function getBeneficiaryCount () 
+    public 
+    view 
+    returns (uint256) {
         return beneficiaryList.length;
     }
 
@@ -80,7 +83,10 @@ contract TokenVesting is Ownable {
     * @dev Returns the details of the current vesting scheme.
     * @return start unix timestamp, vesting duration in days, release interval in minutes
     */
-    function getVestingScheme () external view returns (uint256, uint256, uint256) {
+    function getVestingScheme () 
+    external 
+    view 
+    returns (uint256, uint256, uint256) {
         return (startTimeUnix, durationInDays, releaseScheduleInMinutes);
     }
 
@@ -88,7 +94,11 @@ contract TokenVesting is Ownable {
     * @dev Returns the maximum releaseable amount at a given time.
     * @return releaseable amount
     */
-    function getReleasableAmount (address _beneficiary) external view isBeneficiaryValid (_beneficiary) returns (uint256) {
+    function getReleasableAmount (address _beneficiary) 
+    external 
+    view 
+    isBeneficiaryValid (_beneficiary) 
+    returns (uint256) {
         uint256 _releasableAmount = _getReleaseableAmount (_beneficiary);
         return _releasableAmount;
     }
@@ -97,7 +107,9 @@ contract TokenVesting is Ownable {
     * @dev Assigns the number token reserve address.
     * @param _tokenReserveAddress address of the account with the reserve tokens
     */
-    function setTokenReserveAddress (address _tokenReserveAddress) public onlyOwner {
+    function setTokenReserveAddress (address _tokenReserveAddress) 
+    public 
+    onlyOwner {
         tokenReserveAddress = _tokenReserveAddress;
     }
 
@@ -105,7 +117,9 @@ contract TokenVesting is Ownable {
     * @dev Assigns the maximum number of beneficiaries that can be added (10 by default).
     * @param _beneficiaryCountLimit maximum beneficiaries
     */
-    function setBeneficiaryCountLimit (uint _beneficiaryCountLimit) public onlyOwner {
+    function setBeneficiaryCountLimit (uint _beneficiaryCountLimit) 
+    public 
+    onlyOwner {
         require (_beneficiaryCountLimit > 0, "TokenVesting: Beneficiary count limit should be greater than zero");
         beneficiaryCountLimit = _beneficiaryCountLimit;
     }
@@ -114,7 +128,9 @@ contract TokenVesting is Ownable {
     * @dev Assigns the minimum vesting duration duration (1 by default).
     * @param _minimumDurationInDays maximum beneficiaries
     */
-    function setMinimumDurationInDays (uint256 _minimumDurationInDays) public onlyOwner {
+    function setMinimumDurationInDays (uint256 _minimumDurationInDays) 
+    public 
+    onlyOwner {
         require (_minimumDurationInDays >= 1, "TokenVesting: Minimum duration cannot be lesser than 1 day.");
         minimumDurationInDays = _minimumDurationInDays;
     }
@@ -125,7 +141,12 @@ contract TokenVesting is Ownable {
     * @param _durationInDays vesting duration in days
     * @param _releaseScheduleInMinutes release interval in minutes
     */
-    function setVestingScheme (uint256 _startTimeUnix, uint256 _durationInDays, uint256 _releaseScheduleInMinutes) public onlyOwner {
+    function setVestingScheme (
+            uint256 _startTimeUnix, 
+            uint256 _durationInDays, 
+            uint256 _releaseScheduleInMinutes
+        ) public 
+        onlyOwner {
         require (_startTimeUnix != 0 && _startTimeUnix >= _getCurrentTime(), "TokenVesting: Invalid start time. Start time can't be before current time.");
         require (_durationInDays >= 1, "TokenVesting: Minimum vesting duration is 1 day");
         require (_releaseScheduleInMinutes >= 1, "TokenVesting: Release schedule cannot be lesser than 1 minute.");
@@ -142,7 +163,9 @@ contract TokenVesting is Ownable {
     * @param _beneficiary address
     * @param _amount vesting amount
     */
-    function setBeneficiaryAddressAndAmount (address _beneficiary, uint256 _amount) public onlyOwner {
+    function setBeneficiaryAddressAndAmount (address _beneficiary, uint256 _amount) 
+    public 
+    onlyOwner {
         require (_beneficiary != address(0), "TokenVesting: Zero address cannot be set as a beneficiary");
         require (_amount > 0, "TokenVesting: Vesting amount must be greater than zero");
         require (getBeneficiaryCount() <= beneficiaryCountLimit, "TokenVesting: Beneficiary count has reached limit");
@@ -159,7 +182,9 @@ contract TokenVesting is Ownable {
     * @param _beneficiary address
     * @param _releaseAmount amount of tokens to be released
     */
-    function release (address _beneficiary, uint256 _releaseAmount) public isBeneficiaryValid (_beneficiary) {
+    function release (address _beneficiary, uint256 _releaseAmount) 
+    public 
+    isBeneficiaryValid (_beneficiary) {
         require (_msgSender() == owner() || isValidBeneficiary[_msgSender()], "TokenVesting: Only owner or a valid beneficiary can be caller.");
         require (_releaseAmount <= amount[_beneficiary], "TokenVesting: Release amount cannot be more than total vesting amount");
         uint256 releasableAmount = _getReleaseableAmount (_beneficiary);
@@ -174,7 +199,10 @@ contract TokenVesting is Ownable {
     * @param _beneficiary address
     * @return releasableAmount calculated amount of tokens to be released.
     */
-    function _getReleaseableAmount (address _beneficiary) internal view returns (uint256) {
+    function _getReleaseableAmount (address _beneficiary) 
+    internal 
+    view 
+    returns (uint256) {
         uint256 nowInMinutes = _getCurrentTime().div(1 minutes);
         uint256 startTimeInMinutes = startTimeUnix.div(1 minutes);
         uint256 durationInMinutes = (durationInDays.mul(1 days)).div(1 minutes);
@@ -191,10 +219,13 @@ contract TokenVesting is Ownable {
 
 
     /**
-    * @dev Returns current unix time stamp.
-    * @return current unix time stamp
+    * @dev Returns current unix timestamp.
+    * @return current unix timestamp
     */
-    function _getCurrentTime () internal view returns (uint256) {
+    function _getCurrentTime () 
+    internal 
+    view 
+    returns (uint256) {
         return block.timestamp;
     }
 
