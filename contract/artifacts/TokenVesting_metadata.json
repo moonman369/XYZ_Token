@@ -22,6 +22,50 @@
 					{
 						"indexed": true,
 						"internalType": "address",
+						"name": "beneficiary",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "BeneficiaryAdded",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "startTimeUnix",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "durationInDays",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "releaseScheduleInMinutes",
+						"type": "uint256"
+					}
+				],
+				"name": "NewVestingScheme",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
 						"name": "previousOwner",
 						"type": "address"
 					},
@@ -39,118 +83,30 @@
 				"anonymous": false,
 				"inputs": [
 					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "beneficiary",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "startTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "duration",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "releaseSchedule",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "amount",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "tokensReleased",
-								"type": "uint256"
-							},
-							{
-								"internalType": "bool",
-								"name": "isValid",
-								"type": "bool"
-							}
-						],
+						"indexed": true,
+						"internalType": "address",
+						"name": "beneficiary",
+						"type": "address"
+					},
+					{
 						"indexed": false,
-						"internalType": "struct TokenVesting.vestingScheme",
-						"name": "",
-						"type": "tuple"
+						"internalType": "uint256",
+						"name": "releasedAmount",
+						"type": "uint256"
 					}
 				],
-				"name": "VestingSchemeCreation",
+				"name": "Release",
 				"type": "event"
 			},
 			{
-				"stateMutability": "payable",
-				"type": "fallback"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_beneficiary",
+						"name": "",
 						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_startTime",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_duration",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_releaseSchedule",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_amount",
-						"type": "uint256"
 					}
 				],
-				"name": "createVestingScheme",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getBeneficiarySchemeCountLimit",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getSchemeCount",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "getSchemeCountLimit",
+				"name": "amount",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -165,30 +121,75 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "amountReleased",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "beneficiaryCountLimit",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "beneficiaryList",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getBeneficiaryCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "_beneficiary",
 						"type": "address"
 					}
 				],
-				"name": "getSchemeIdsByBeneficiary",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "",
-						"type": "uint256[]"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_schemeId",
-						"type": "uint256"
-					}
-				],
-				"name": "getUnvestedAmountById",
+				"name": "getReleasableAmount",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -200,56 +201,55 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
+				"inputs": [],
+				"name": "getVestingScheme",
+				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "_schemeId",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
 						"type": "uint256"
 					}
 				],
-				"name": "getVestingSchemeById",
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "isValidBeneficiary",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "beneficiary",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "startTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "duration",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "releaseSchedule",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "amount",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "tokensReleased",
-								"type": "uint256"
-							},
-							{
-								"internalType": "bool",
-								"name": "isValid",
-								"type": "bool"
-							}
-						],
-						"internalType": "struct TokenVesting.vestingScheme",
+						"internalType": "bool",
 						"name": "",
-						"type": "tuple"
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "minimumDurationInDays",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -271,17 +271,17 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "_schemeId",
-						"type": "uint256"
+						"internalType": "address",
+						"name": "_beneficiary",
+						"type": "address"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_amount",
+						"name": "_releaseAmount",
 						"type": "uint256"
 					}
 				],
-				"name": "releaseTokens",
+				"name": "release",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -296,12 +296,17 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_beneficiary",
+						"type": "address"
+					},
+					{
 						"internalType": "uint256",
-						"name": "_beneficiarySchemeCountLimit",
+						"name": "_amount",
 						"type": "uint256"
 					}
 				],
-				"name": "setBeneficiarySchemeCountLimit",
+				"name": "setBeneficiaryAddressAndAmount",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -310,13 +315,75 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_schemeCountLimit",
+						"name": "_beneficiaryCountLimit",
 						"type": "uint256"
 					}
 				],
-				"name": "setSchemeCountLimit",
+				"name": "setBeneficiaryCountLimit",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_minimumDurationInDays",
+						"type": "uint256"
+					}
+				],
+				"name": "setMinimumDurationInDays",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_tokenReserveAddress",
+						"type": "address"
+					}
+				],
+				"name": "setTokenReserveAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_startTimeUnix",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_durationInDays",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_releaseScheduleInMinutes",
+						"type": "uint256"
+					}
+				],
+				"name": "setVestingScheme",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "tokenReserveAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -331,25 +398,52 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
-			},
-			{
-				"stateMutability": "payable",
-				"type": "receive"
 			}
 		],
 		"devdoc": {
 			"kind": "dev",
 			"methods": {
+				"constructor": {
+					"details": "Creates a token vesting contract.",
+					"params": {
+						"_token": "address of the ERC20 token contract"
+					}
+				},
+				"getBeneficiaryCount()": {
+					"details": "Returns the number of beneficiary addresses added.",
+					"returns": {
+						"_0": "the number of beneficiary addresses"
+					}
+				},
+				"getReleasableAmount(address)": {
+					"details": "Returns the maximum releaseable amount at a given time.",
+					"returns": {
+						"_0": "releaseable amount"
+					}
+				},
+				"getVestingScheme()": {
+					"details": "Returns the details of the current vesting scheme.",
+					"returns": {
+						"_0": "start unix timestamp, vesting duration in days, release interval in minutes"
+					}
+				},
 				"owner()": {
 					"details": "Returns the address of the current owner."
 				},
 				"renounceOwnership()": {
 					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
 				},
+				"setTokenReserveAddress(address)": {
+					"details": "Assigns the number token reserve address.",
+					"params": {
+						"_tokenReserveAddress": "address of the account with the reserve tokens"
+					}
+				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
 				}
 			},
+			"title": "TokenVesting",
 			"version": 1
 		},
 		"userdoc": {
@@ -375,19 +469,19 @@
 	},
 	"sources": {
 		"contract/token.sol": {
-			"keccak256": "0x023ea8ee205b1beb5c0e79053113dca8d538536fc57062d73f0e3e61764cf734",
+			"keccak256": "0x8236a59db05099d233db2cd69d6ccbaf368a6f95eaccb7bb734dd82ab4cebdb3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e75e6999d43d8f82f6217bcf5372c50e49e9bbceb8ded667d1943a3826c3e6dd",
-				"dweb:/ipfs/QmW6nQ9YnxiHKCYKPupzaB1MuKPZ6a3qDZR7PDEpNkNHRx"
+				"bzz-raw://284b4b0ca3a75ff8876f83e181f363edef816424f1e9e3db7f7bad672441a3ee",
+				"dweb:/ipfs/QmaMNvRpdFNDxP17pz4ZdrZ7Hdv4uTtXsXiq2KNgTFrPc6"
 			]
 		},
 		"contract/tokenvesting.sol": {
-			"keccak256": "0x0e319f721fb7a618b8963233138864df7ee13bfd6e17869c7d89e30528b17d35",
+			"keccak256": "0xc9c9b856d88f93c4583fd18521155d8ae90a1945b24abe3c66022ead79d1345f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e6f046c9409f5a5b91a48f76724ce2d855b25024c1673cb955ac9953328d4f7a",
-				"dweb:/ipfs/QmbNQ7bwrG1hi7L5M21g2YtHyB7gezUQHxMHSgYESsicr7"
+				"bzz-raw://f1ae830e7e6bef14f381df1bc80489163555c68f094277f236ac3d07dc540a70",
+				"dweb:/ipfs/QmUvj3Z9PUMfhktyzd92XAVkBijzVBML3sNS7VZWfNFkaS"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {

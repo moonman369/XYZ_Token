@@ -1,3 +1,4 @@
+//contract/tokenvesting.sol
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.0;
@@ -7,153 +8,162 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol";
 import "./token.sol";
 
+/**
+ * @title TokenVesting
+ */
 contract TokenVesting is Ownable {
 
     using SafeMath for uint256;
 
-    IERC20 private token;
+    IERC20 token;
+    //ERC20 token address
+ 
+    uint256 startTimeUnix;
+    // starting unix timestamp of vesting scheme
+    uint256 durationInDays;
+    // duration of vesting in days
+    uint256 releaseScheduleInMinutes;    
+    // release interval of vested tokens in minutes
+    uint256 totalVestableAmount;
+    // total amount vested in the contract
 
-    struct vestingScheme {
-        address beneficiary;
-        uint256 startTime;
-        uint256 duration;
-        uint256 releaseSchedule;
-        uint256 amount;
-        uint256 tokensReleased;
-        bool isValid;
-    }
+    address[] public beneficiaryList;
+    // array of beneficiary addresses
+    mapping (address => bool) public isValidBeneficiary;
+    // maps beneficiary address to validity of beneficiary
+    mapping (address => uint256) public amount;
+    // maps beneficiary address to vested amount
+    mapping (address => uint256) public amountReleased;
+    // maps beneficiary address to released amount
 
-    uint256 private schemeCountLimit;
-    uint256 private schemeCount;
-    uint256 private schemeId;
-    uint256 private beneficiarySchemeCountLimit;
-    mapping (uint256 => vestingScheme) schemes;
-    mapping (address => uint256[]) beneficiarySchemeIds;
+    uint256 public beneficiaryCountLimit;
+    // stores max limit of beneficiary count
+    uint256 public minimumDurationInDays;
+    // stores min limit of vesting duration in days
+    address public tokenReserveAddress;
+    // stores the address of reserve tokens
 
-    event VestingSchemeCreation (TokenVesting.vestingScheme);
+    event NewVestingScheme (uint256 startTimeUnix, uint256 durationInDays, uint256 releaseScheduleInMinutes);
+    //event emits when new vesting scheme is generated
+    event BeneficiaryAdded (address indexed beneficiary, uint256 amount);
+    // event emits when new beneficiary is added
+    event Release (address indexed beneficiary, uint256 releasedAmount);
+    //event emits when token release is performed
 
-    modifier notZeroAddress(address _token) {
-        require (_token != address(0));
+    /**
+    * @dev Reverts if passed identifier does not match any valid beneficiary address or is a zero address. 
+    */
+    modifier isBeneficiaryValid (address _beneficiary) {
+        require (isValidBeneficiary[_beneficiary] && _beneficiary != address (0), "TokenVesting: Invalid beneficiary address detected");
         _;
     }
 
-    constructor (address _token) notZeroAddress (_token) {
-        token = IERC20 (_token);
-        schemeCountLimit = 10;
-        beneficiarySchemeCountLimit = 1;
+    /**
+     * @dev Creates a token vesting contract.
+     * @param _token address of the ERC20 token contract
+     */
+    constructor (address _token) {
+        token = IERC20(_token);
+        beneficiaryCountLimit = 10;
+        minimumDurationInDays = 1;
     }
 
-    receive () external payable {}
-    fallback () external payable {}
-
-    function getVestingSchemeById (uint _schemeId) 
-    external 
-    view 
-    returns (vestingScheme memory) {
-        require (schemes[_schemeId].isValid == true, "TokenVesting: Vesting Scheme is either deleted or does not exist");
-        return schemes[_schemeId];
+    /**
+    * @dev Returns the number of beneficiary addresses added.
+    * @return the number of beneficiary addresses
+    */
+    function getBeneficiaryCount () public view returns (uint256) {
+        return beneficiaryList.length;
     }
 
-    function getBeneficiarySchemeCountLimit () external view returns (uint256) {
-        return beneficiarySchemeCountLimit;
+    /**
+    * @dev Returns the details of the current vesting scheme.
+    * @return start unix timestamp, vesting duration in days, release interval in minutes
+    */
+    function getVestingScheme () external view returns (uint256, uint256, uint256) {
+        return (startTimeUnix, durationInDays, releaseScheduleInMinutes);
     }
 
-    function getSchemeIdsByBeneficiary (address _beneficiary) external view returns (uint256[] memory) {
-        return beneficiarySchemeIds[_beneficiary];
+    /**
+    * @dev Returns the maximum releaseable amount at a given time.
+    * @return releaseable amount
+    */
+    function getReleasableAmount (address _beneficiary) external view isBeneficiaryValid (_beneficiary) returns (uint256) {
+        uint256 _releasableAmount = _getReleaseableAmount (_beneficiary);
+        return _releasableAmount;
     }
 
-    function getUnvestedAmountById (uint256 _schemeId) external view returns (uint256) {
-        require (schemes[_schemeId].isValid == true, "TokenVesting: Vesting Scheme is either deleted or does not exist");
-        vestingScheme memory scheme = schemes[_schemeId];
-        uint256 unvestedAmount = scheme.amount.sub(scheme.tokensReleased);
-        return unvestedAmount;
+    /**
+    * @dev Assigns the number token reserve address.
+    * @param _tokenReserveAddress address of the account with the reserve tokens
+    */
+    function setTokenReserveAddress (address _tokenReserveAddress) public onlyOwner {
+        tokenReserveAddress = _tokenReserveAddress;
     }
 
-    function getSchemeCountLimit () external view returns (uint256) {
-        return schemeCountLimit;
+    function setBeneficiaryCountLimit (uint _beneficiaryCountLimit) public onlyOwner {
+        require (_beneficiaryCountLimit > 0, "TokenVesting: Beneficiary count limit should be greater than zero");
+        beneficiaryCountLimit = _beneficiaryCountLimit;
     }
 
-    function getSchemeCount () external view returns (uint256) {
-        return schemeCount;
-    } 
-
-    function setSchemeCountLimit (uint _schemeCountLimit) public onlyOwner{
-        schemeCountLimit = _schemeCountLimit;
+    function setMinimumDurationInDays (uint256 _minimumDurationInDays) public onlyOwner {
+        require (_minimumDurationInDays >= 1, "TokenVesting: Minimum duration cannot be lesser than 1 day.");
+        minimumDurationInDays = _minimumDurationInDays;
     }
 
-    function setBeneficiarySchemeCountLimit (uint _beneficiarySchemeCountLimit) public onlyOwner {
-        beneficiarySchemeCountLimit = _beneficiarySchemeCountLimit;
+    function setVestingScheme (uint256 _startTimeUnix, uint256 _durationInDays, uint256 _releaseScheduleInMinutes) public onlyOwner {
+        require (_startTimeUnix != 0 && _startTimeUnix >= _getCurrentTime(), "TokenVesting: Invalid start time. Start time can't be before current time.");
+        require (_durationInDays >= 1, "TokenVesting: Minimum vesting duration is 1 day");
+        require (_releaseScheduleInMinutes >= 1, "TokenVesting: Release schedule cannot be lesser than 1 minute.");
+
+        startTimeUnix = _startTimeUnix;
+        durationInDays = _durationInDays;
+        releaseScheduleInMinutes = _releaseScheduleInMinutes;
+
+        emit NewVestingScheme (startTimeUnix, durationInDays, releaseScheduleInMinutes);
     }
 
-    function createVestingScheme (
-        address _beneficiary,
-        uint256 _startTime,
-        uint256 _duration,
-        uint256 _releaseSchedule,
-        uint256 _amount
-    ) external onlyOwner{
-        require (_beneficiary != address(0), "TokenVesting: Cannot add zero address as beneficiary");
-        require (_duration > 0, "TokenVesting: Vesting period must be greater than zero");
-        require (_amount > 0, "TokenVesting: Vestable amount must be greater than 0");
-        require (beneficiarySchemeIds[_beneficiary].length < beneficiarySchemeCountLimit, "TokenVesting: Scheme count for this beneficiary has reached limit.");
-
-        vestingScheme memory scheme = vestingScheme (
-         
-         _beneficiary,
-         _startTime,
-         _duration,
-         _releaseSchedule,
-         _amount,
-         0,
-         true);
-
-        schemeId = _calculateNewSchemeId(_beneficiary, schemeCount);
-        beneficiarySchemeIds[scheme.beneficiary].push(schemeId);
-        schemes[schemeId] = scheme;
-        schemeCount.add(1);
-        emit VestingSchemeCreation (scheme);
+    function setBeneficiaryAddressAndAmount (address _beneficiary, uint256 _amount) public onlyOwner {
+        require (_beneficiary != address(0), "TokenVesting: Zero address cannot be set as a beneficiary");
+        require (_amount > 0, "TokenVesting: Vesting amount must be greater than zero");
+        //require (totalVestableAmount.add(_amount) <= ERC20(token).allowance(tokenReserveAddress, address(this)), "TokenVesting: Total vestable amount exceeded cuurent contract allowance.");
+        require (getBeneficiaryCount() <= beneficiaryCountLimit, "TokenVesting: Beneficiary count has reached limit");
+        require (!isValidBeneficiary[_beneficiary], "TokenVesting: Beneficiary already added");
+        beneficiaryList.push(_beneficiary);
+        amount[_beneficiary] = _amount;
+        totalVestableAmount = totalVestableAmount.add(_amount);
+        isValidBeneficiary[_beneficiary] = true;
+        emit BeneficiaryAdded (_beneficiary, amount[_beneficiary]);
     }
 
-    function releaseTokens (
-        uint256 _schemeId,
-        uint256 _amount
-    ) 
-    public {
-        require (schemes[_schemeId].isValid == true);//merge
-        require (_msgSender() == owner() || _msgSender() == schemes[_schemeId].beneficiary, "TokenVesting: Caller must be owner or beneficiary");
-        
-        vestingScheme memory scheme = schemes[_schemeId];
-
-        uint256 vestedAmount = _calculateReleaseableAmount (scheme);
-        require (_amount <= vestedAmount, "TokenVesting: Amount greater than current vested amount");
-
-        scheme.tokensReleased = scheme.tokensReleased.add(_amount);
-        token.transfer(scheme.beneficiary, _amount);
+    function release (address _beneficiary, uint256 _releaseAmount) public isBeneficiaryValid (_beneficiary) {
+        require (_msgSender() == owner() || isValidBeneficiary[_msgSender()], "TokenVesting: Only owner or a valid beneficiary can be caller.");
+        require (_releaseAmount <= amount[_beneficiary], "TokenVesting: Release amount cannot be more than total vesting amount");
+        uint256 releasableAmount = _getReleaseableAmount (_beneficiary);
+        require (_releaseAmount <= releasableAmount, "TokenVesting: Entered release amount is greater than cuurent releasable amount");
+        amountReleased[_beneficiary] = amountReleased[_beneficiary].add(_releaseAmount);
+        emit Release (_beneficiary, _releaseAmount);
+        token.transferFrom(tokenReserveAddress, _beneficiary, _releaseAmount);
     }
 
-
-
-    function _calculateReleaseableAmount (vestingScheme memory scheme) internal view returns (uint256) {
-        uint256 now_ = _now();
-        if (now_ < scheme.startTime.add(scheme.duration)){
-            uint256 durationInMinutes = (scheme.duration * 1 days) / (scheme.releaseSchedule * 1 minutes);
-            uint256 timeElapsed = now_.sub(scheme.startTime);
-            uint256 vestingPeriodsElapsed = timeElapsed.div(scheme.releaseSchedule);
-            uint256 releaseAmount = scheme.amount.mul(scheme.releaseSchedule).mul(vestingPeriodsElapsed).div(durationInMinutes);
-            releaseAmount = releaseAmount.sub(scheme.tokensReleased);
-            return releaseAmount;
+    function _getReleaseableAmount (address _beneficiary) internal view returns (uint256) {
+        uint256 nowInMinutes = _getCurrentTime().div(1 minutes);
+        uint256 startTimeInMinutes = startTimeUnix.div(1 minutes);
+        uint256 durationInMinutes = (durationInDays.mul(1 days)).div(1 minutes);
+        if (nowInMinutes < startTimeInMinutes.add(durationInMinutes)) {
+            uint256 timeElapsedWrtReleaseSchedule = (nowInMinutes.sub(startTimeInMinutes)).div(releaseScheduleInMinutes);
+            uint256 durationWrtReleaseSchedule = durationInMinutes.div(releaseScheduleInMinutes);
+            uint256 releasableAmount = (amount[_beneficiary].mul(timeElapsedWrtReleaseSchedule).div(durationWrtReleaseSchedule)).sub(amountReleased[_beneficiary]);
+            return releasableAmount;
         }
-        else {
-            return scheme.amount.sub(scheme.tokensReleased);
+        else{
+            return amount[_beneficiary].sub(amountReleased[_beneficiary]);
         }
-            
     }
 
-    function _calculateNewSchemeId (address _beneficiary, uint256 index) internal pure returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(_beneficiary, index))) % 1000000000;
-    }
-
-    function _now() internal virtual view returns (uint256) {
+    function _getCurrentTime () internal view returns (uint256) {
         return block.timestamp;
     }
+
+
 }

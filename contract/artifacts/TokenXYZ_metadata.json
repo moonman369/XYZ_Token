@@ -16,6 +16,11 @@
 						"internalType": "string",
 						"name": "_symbol",
 						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_totalSupply",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "nonpayable",
@@ -70,19 +75,6 @@
 				],
 				"name": "Transfer",
 				"type": "event"
-			},
-			{
-				"inputs": [],
-				"name": "_totalSupply",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			},
 			{
 				"inputs": [
@@ -317,6 +309,14 @@
 				"balanceOf(address)": {
 					"details": "See {IERC20-balanceOf}."
 				},
+				"constructor": {
+					"details": "Creates a ERC20 token contract.",
+					"params": {
+						"_name": "name of the token",
+						"_symbol": "symbol of the token",
+						"_totalSupply": "total supply of the token"
+					}
+				},
 				"decimals()": {
 					"details": "Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5.05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless this function is overridden; NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}."
 				},
@@ -342,6 +342,7 @@
 					"details": "See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `amount`. - the caller must have allowance for ``from``'s tokens of at least `amount`."
 				}
 			},
+			"title": "TokenXYZ",
 			"version": 1
 		},
 		"userdoc": {
@@ -367,19 +368,19 @@
 	},
 	"sources": {
 		"contract/token.sol": {
-			"keccak256": "0x023ea8ee205b1beb5c0e79053113dca8d538536fc57062d73f0e3e61764cf734",
+			"keccak256": "0x8236a59db05099d233db2cd69d6ccbaf368a6f95eaccb7bb734dd82ab4cebdb3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e75e6999d43d8f82f6217bcf5372c50e49e9bbceb8ded667d1943a3826c3e6dd",
-				"dweb:/ipfs/QmW6nQ9YnxiHKCYKPupzaB1MuKPZ6a3qDZR7PDEpNkNHRx"
+				"bzz-raw://284b4b0ca3a75ff8876f83e181f363edef816424f1e9e3db7f7bad672441a3ee",
+				"dweb:/ipfs/QmaMNvRpdFNDxP17pz4ZdrZ7Hdv4uTtXsXiq2KNgTFrPc6"
 			]
 		},
 		"contract/tokenvesting.sol": {
-			"keccak256": "0x0e319f721fb7a618b8963233138864df7ee13bfd6e17869c7d89e30528b17d35",
+			"keccak256": "0xcaf6969fa291a23023b4e9fe2d3f78278e42546c2bff05b7e0f9f3cd3752625e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e6f046c9409f5a5b91a48f76724ce2d855b25024c1673cb955ac9953328d4f7a",
-				"dweb:/ipfs/QmbNQ7bwrG1hi7L5M21g2YtHyB7gezUQHxMHSgYESsicr7"
+				"bzz-raw://a1fa9691f9e8cce80c8d82079486fc22b660702c10e0b56db76af251020b04ac",
+				"dweb:/ipfs/QmZ59PaoxNFSucgELAfz1HS4Wq3hue5KL6maaJRsafsDLP"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
